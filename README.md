@@ -1,6 +1,8 @@
 # Drift Game
 
 A simple 3D car drifting demo built with [Three.js](https://threejs.org/).
+The camera now stays fixed above the car and buildings are placed around
+the map so you can gauge movement.
 
 ## How to Play
 
@@ -10,7 +12,9 @@ A simple 3D car drifting demo built with [Three.js](https://threejs.org/).
    - Down Arrow: Brake/Reverse
    - Left/Right Arrow: Steer
 
-The car will drift as you steer at speed. Use the arrow keys to control it.
+The camera is fixed above the car so turning won't rotate your view. The
+car will drift as you steer at speed. Buildings are scattered around the
+level so you can see how fast you're moving.
 
 ## Development
 

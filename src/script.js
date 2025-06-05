@@ -3,7 +3,8 @@ const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x202020);
+// Sky blue background so motion is easier to see
+scene.background = new THREE.Color(0x87ceeb);
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -29,6 +30,20 @@ const carMat = new THREE.MeshStandardMaterial({ color: 0xff0000 });
 const carMesh = new THREE.Mesh(carGeo, carMat);
 carMesh.position.y = 0.25;
 scene.add(carMesh);
+
+// Simple buildings scattered around the ground to show movement
+const buildingMat = new THREE.MeshStandardMaterial({ color: 0x808080 });
+for (let i = 0; i < 20; i++) {
+  const height = Math.random() * 4 + 2;
+  const bGeo = new THREE.BoxGeometry(2, height, 2);
+  const building = new THREE.Mesh(bGeo, buildingMat);
+  building.position.set(
+    (Math.random() - 0.5) * 180,
+    height / 2,
+    (Math.random() - 0.5) * 180
+  );
+  scene.add(building);
+}
 
 class Car {
   constructor(mesh) {
@@ -108,11 +123,9 @@ function gameLoop(time) {
 
   car.update(input, dt);
 
-  const camDistance = 5;
-  const camHeight = 3;
-  camera.position.x = car.x - Math.sin(car.angle) * camDistance;
-  camera.position.y = camHeight;
-  camera.position.z = car.z - Math.cos(car.angle) * camDistance;
+  // Overhead camera that stays fixed above the car
+  const camHeight = 10;
+  camera.position.set(car.x, camHeight, car.z);
   camera.lookAt(car.x, 0.25, car.z);
 
   renderer.render(scene, camera);
