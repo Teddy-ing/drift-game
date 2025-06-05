@@ -123,9 +123,10 @@ function gameLoop(time) {
 
   car.update(input, dt);
 
-  // Overhead camera that stays fixed above the car
+  // Camera fixed at a 45 degree angle above the car
   const camHeight = 10;
-  camera.position.set(car.x, camHeight, car.z);
+  const offset = camHeight / Math.SQRT2; // horizontal distance for ~45deg
+  camera.position.set(car.x + offset, camHeight, car.z + offset);
   camera.lookAt(car.x, 0.25, car.z);
 
   renderer.render(scene, camera);
