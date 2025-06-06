@@ -57,33 +57,43 @@ class Car {
   }
 
   update(input, dt) {
-    const accel = 10;
+
+    const accel = 30; // acceleration in units per second^2
     const maxSpeed = 20;
-    const friction = 0.98;
-    const drift = 0.92;
-    const turnSpeed = 2;
-
-    if (input.up) this.speed += accel * dt;
-    if (input.down) this.speed -= accel * dt;
-    this.speed = Math.max(-maxSpeed, Math.min(maxSpeed, this.speed));
-
-    if (input.left) this.angle += turnSpeed * dt * (this.vx !== 0 || this.vz !== 0 ? 1 : 0);
-    if (input.right) this.angle -= turnSpeed * dt * (this.vx !== 0 || this.vz !== 0 ? 1 : 0);
+    const drift = 0.96; // velocity decay for drifting feel
+    const turnSpeed = 2.5;
 
     const forwardX = Math.sin(this.angle);
     const forwardZ = Math.cos(this.angle);
-    this.vx += forwardX * this.speed * dt;
-    this.vz += forwardZ * this.speed * dt;
-    this.speed = 0;
 
-    this.vx *= friction;
-    this.vz *= friction;
+    // Apply acceleration based on input
+    if (input.up) {
+      this.vx += forwardX * accel * dt;
+      this.vz += forwardZ * accel * dt;
+    }
+    if (input.down) {
+      this.vx -= forwardX * accel * dt;
+      this.vz -= forwardZ * accel * dt;
+    }
 
-    const rightX = forwardZ;
-    const rightZ = -forwardX;
-    const sideSpeed = this.vx * rightX + this.vz * rightZ;
-    this.vx -= sideSpeed * (1 - drift) * rightX;
-    this.vz -= sideSpeed * (1 - drift) * rightZ;
+    // Turning controls
+    if (input.left) this.angle += turnSpeed * dt;
+    if (input.right) this.angle -= turnSpeed * dt;
+
+    // Limit overall velocity
+    let speed = Math.sqrt(this.vx * this.vx + this.vz * this.vz);
+    if (speed > maxSpeed) {
+      const scale = maxSpeed / speed;
+      this.vx *= scale;
+      this.vz *= scale;
+      speed = maxSpeed;
+    }
+
+    // Apply simple drift/friction
+    this.vx *= drift;
+    this.vz *= drift;
+
+    // Update position
 
     this.x += this.vx * dt;
     this.z += this.vz * dt;
@@ -123,9 +133,12 @@ function gameLoop(time) {
 
   car.update(input, dt);
 
-  // Overhead camera that stays fixed above the car
+
+  // Camera fixed at a 45 degree angle above the car
   const camHeight = 10;
-  camera.position.set(car.x, camHeight, car.z);
+  const offset = camHeight / Math.SQRT2; // horizontal distance for ~45deg
+  camera.position.set(car.x + offset, camHeight, car.z + offset);
+
   camera.lookAt(car.x, 0.25, car.z);
 
   renderer.render(scene, camera);
