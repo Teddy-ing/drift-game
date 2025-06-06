@@ -57,6 +57,7 @@ class Car {
   }
 
   update(input, dt) {
+
     const accel = 30; // acceleration in units per second^2
     const maxSpeed = 20;
     const drift = 0.96; // velocity decay for drifting feel
@@ -93,6 +94,7 @@ class Car {
     this.vz *= drift;
 
     // Update position
+
     this.x += this.vx * dt;
     this.z += this.vz * dt;
 
@@ -131,10 +133,12 @@ function gameLoop(time) {
 
   car.update(input, dt);
 
+
   // Camera fixed at a 45 degree angle above the car
   const camHeight = 10;
   const offset = camHeight / Math.SQRT2; // horizontal distance for ~45deg
   camera.position.set(car.x + offset, camHeight, car.z + offset);
+
   camera.lookAt(car.x, 0.25, car.z);
 
   renderer.render(scene, camera);
